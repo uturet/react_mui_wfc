@@ -1,25 +1,50 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import {Grid, Box} from '@mui/material';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Box sx={{display: 'flex', width: '100%', height: '100vh'}}>
+
+      <Grid
+        container
+        rowSpacing={4.5}
+        columnSpacing={2.75}
+        direction="row"
+        justifyContent="center"
+        alignItems="center">
+        <Grid item xs={12} md={7} lg={8}>
+
+          <Card sx={{minWidth: 275}}>
+            <CardContent>
+              <Typography sx={{fontSize: 14}} color="text.secondary" gutterBottom>
+          Word of the Day
+              </Typography>
+              <Typography variant="h5" component="div">
+          benevolent
+              </Typography>
+              <Typography sx={{mb: 1.5}} color="text.secondary">
+          adjective
+              </Typography>
+              <Typography variant="body2">
+          well meaning and kindly.
+                <br />
+                {'"a benevolent smile"'}
+              </Typography>
+            </CardContent>
+            <CardActions>
+              <Button size="small">Learn More</Button>
+            </CardActions>
+          </Card>
+        </Grid>
+      </Grid>
+    </Box>
+
+
   );
 }
 
