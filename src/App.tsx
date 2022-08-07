@@ -89,7 +89,7 @@ function App() {
         <Box sx={{
           display: 'flex',
           width: `calc(100% - ${drawerWidth}px)`,
-          minHeight: '100%',
+          minHeight: 'calc(100% - 132px)',
           height: 'fit-content',
           marginLeft: 'auto',
           padding: '88px 24px 24px 24px',

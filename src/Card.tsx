@@ -1,25 +1,40 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {
   Card as MUICard,
   CardContent,
   Grid,
+  Button,
+  Paper,
 } from '@mui/material';
-import {useCard} from './CardContext';
-
-
-const Filler = () => <div style={{width: '100%', height: '100px', backgroundColor: 'orange'}}/>;
+import {useCard, CardContentTypes} from './CardContext';
 
 const Card = () => {
-  const [rows, cols, width] = useCard();
-  const row = new Array(cols*rows).fill((
-    <Grid item xs={12/cols}>
-      <Filler/>
-    </Grid>
-  ));
+  const [cardData,,,, setType] = useCard();
+  const size = 12/cardData.cols;
+  const content = useMemo(() => {
+    return cardData.content.map((r, i) => {
+      return r.map((c, j) => (
+        <Grid key={`${i} ${j}`} item xs={size}>
+          <Paper sx={{display: 'flex', flexDIrection: 'row', flexWrap: 'wrap', justifyContent: 'space-between'}} variant="outlined">
+            {c.map((t) => {
+              return <Button
+                key={`${i} ${j} ${CardContentTypes[t]}`}
+                size='small'
+                variant="text"
+                onClick={() => setType(i, j, t)}>
+                {CardContentTypes[t]}
+              </Button>;
+            })}
+          </Paper>
+        </Grid>
+      ));
+    });
+  }, [cardData]);
+
 
   return (
-    <Grid item xs={width}>
-      <MUICard sx={{margin: 'auto'}}>
+    <Grid item xs={cardData.width}>
+      <MUICard elevation={16} sx={{margin: 'auto'}}>
         <CardContent>
           <Grid
             container
@@ -27,7 +42,7 @@ const Card = () => {
             direction="row"
             justifyContent="center"
             alignItems="center">
-            {row}
+            {content}
           </Grid>
         </CardContent>
       </MUICard>

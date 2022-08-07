@@ -12,8 +12,35 @@ import {
 } from '@mui/material';
 import {useCard} from './CardContext';
 
+interface ListItemSliderProps {
+  label: string
+  val: number
+  setVal: (val: number) => void
+}
+const ListItemSlider: React.FunctionComponent<ListItemSliderProps> = ({label, val, setVal}) => {
+  return (
+    <>
+      <ListItem>
+        <Typography align='center'>
+          {label} {val}
+        </Typography>
+      </ListItem>
+      <ListItem>
+        <Slider
+          sx={{width: '95%'}}
+          value={val}
+          step={1}
+          marks
+          min={1}
+          max={12}
+          onChange={(e, v, a) => setVal(v as number)} />
+      </ListItem>
+    </>
+  );
+};
+
 const Drawer: React.FunctionComponent<DrawerProps> = (props) => {
-  const [rows, cols, width, setRows, setCols, setWidth] = useCard();
+  const [cardData, setWidth, setRows, setCols] = useCard();
 
   return (
     <MUIDrawer {...props}>
@@ -23,53 +50,20 @@ const Drawer: React.FunctionComponent<DrawerProps> = (props) => {
         <Box sx={{flexGrow: '1'}}/>
         <Divider />
         <List>
-          <ListItem>
-            <Typography align='center'>
-            Width {width}
-            </Typography>
-          </ListItem>
-          <ListItem>
-            <Slider
-              sx={{width: '95%'}}
-              value={width}
-              step={1}
-              marks
-              min={1}
-              max={12}
-              onChange={(e, v, a) => setWidth(v as number)} />
-          </ListItem>
+          <ListItemSlider
+            label='Width'
+            val={cardData.width}
+            setVal={setWidth}/>
 
-          <ListItem>
-            <Typography align='center'>
-            Columns {cols}
-            </Typography>
-          </ListItem>
-          <ListItem>
-            <Slider
-              sx={{width: '95%'}}
-              value={cols}
-              step={1}
-              marks
-              min={1}
-              max={12}
-              onChange={(e, v, a) => setCols(v as number)} />
-          </ListItem>
+          <ListItemSlider
+            label='Columns'
+            val={cardData.cols}
+            setVal={setCols}/>
 
-          <ListItem>
-            <Typography align='center'>
-            Rows {rows}
-            </Typography>
-          </ListItem>
-          <ListItem>
-            <Slider
-              sx={{width: '95%'}}
-              value={rows}
-              step={1}
-              marks
-              min={1}
-              max={10}
-              onChange={(e, v, a) => setRows(v as number)} />
-          </ListItem>
+          <ListItemSlider
+            label='Rows'
+            val={cardData.rows}
+            setVal={setRows}/>
         </List>
       </Box>
     </MUIDrawer>
