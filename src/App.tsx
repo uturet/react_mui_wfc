@@ -1,50 +1,113 @@
 import React from 'react';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import {Grid, Box} from '@mui/material';
+import {
+  Grid,
+  Box,
+  Typography,
+  AppBar,
+  Toolbar,
+  IconButton,
+  Divider,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+} from '@mui/material';
+import Card from './Card';
+import Drawer from './Drawer';
+import {CardProvider} from './CardContext';
+const drawerWidth = 240;
 
 function App() {
   return (
-    <Box sx={{display: 'flex', width: '100%', height: '100vh'}}>
+    <CardProvider>
+      <Box sx={{display: 'flex', height: '100vh'}}>
+        <AppBar
+          position="fixed"
+          sx={{
+            width: {sm: `calc(100% - ${drawerWidth}px)`},
+            ml: {sm: `${drawerWidth}px`},
+          }}
+        >
+          <Toolbar>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              edge="start"
+              sx={{mr: 2, display: {sm: 'none'}}}
+            >
+            </IconButton>
+            <Typography variant="h6" noWrap component="div">
+            MaterialUI Wave Function Collapse
+            </Typography>
+          </Toolbar>
+        </AppBar>
 
-      <Grid
-        container
-        rowSpacing={4.5}
-        columnSpacing={2.75}
-        direction="row"
-        justifyContent="center"
-        alignItems="center">
-        <Grid item xs={12} md={7} lg={8}>
+        <Box
+          sx={{width: {sm: drawerWidth}, flexShrink: {sm: 0}}}
+          aria-label="mailbox folders">
 
-          <Card sx={{minWidth: 275}}>
-            <CardContent>
-              <Typography sx={{fontSize: 14}} color="text.secondary" gutterBottom>
-          Word of the Day
-              </Typography>
-              <Typography variant="h5" component="div">
-          benevolent
-              </Typography>
-              <Typography sx={{mb: 1.5}} color="text.secondary">
-          adjective
-              </Typography>
-              <Typography variant="body2">
-          well meaning and kindly.
-                <br />
-                {'"a benevolent smile"'}
-              </Typography>
-            </CardContent>
-            <CardActions>
-              <Button size="small">Learn More</Button>
-            </CardActions>
-          </Card>
-        </Grid>
-      </Grid>
-    </Box>
+          <Drawer
+            variant="permanent"
+            sx={{
+              'display': {xs: 'none', sm: 'block'},
+              '& .MuiDrawer-paper': {boxSizing: 'border-box', width: drawerWidth},
+            }}
+            open
+          >
+            <div>
+              <Toolbar />
+              <Divider />
+              <List>
+                {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
+                  <ListItem key={text} disablePadding>
+                    <ListItemButton>
+                      <ListItemIcon>
+                      </ListItemIcon>
+                      <ListItemText primary={text} />
+                    </ListItemButton>
+                  </ListItem>
+                ))}
+              </List>
+              <Divider />
+              <List>
+                {['All mail', 'Trash', 'Spam'].map((text, index) => (
+                  <ListItem key={text} disablePadding>
+                    <ListItemButton>
+                      <ListItemIcon>
+                      </ListItemIcon>
+                      <ListItemText primary={text} />
+                    </ListItemButton>
+                  </ListItem>
+                ))}
+              </List>
+            </div>
+          </Drawer>
 
+        </Box>
 
+        <Box sx={{
+          display: 'flex',
+          width: `calc(100% - ${drawerWidth}px)`,
+          minHeight: '100%',
+          height: 'fit-content',
+          marginLeft: 'auto',
+          padding: '88px 24px 24px 24px',
+        }}>
+
+          <Grid
+            container
+            rowSpacing={4.5}
+            columnSpacing={2.75}
+            direction="row"
+            justifyContent="center"
+            alignItems="center">
+            <Card/>
+          </Grid>
+        </Box>
+
+      </Box>
+    </CardProvider>
   );
 }
 
