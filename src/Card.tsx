@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react';
+import React, {useEffect, useState, ReactElement} from 'react';
 import {
   Card as MUICard,
   CardContent,
@@ -9,10 +9,13 @@ import {
 import {useCard, CardContentTypes} from './CardContext';
 
 const Card = () => {
-  const [cardData,,,, setType] = useCard();
+  const [content, setContent] = useState<ReactElement[][]|null>(null);
+  const {cardData, setType, setAvailable} = useCard();
   const size = 12/cardData.cols;
-  const content = useMemo(() => {
-    return cardData.content.map((r, i) => {
+
+  useEffect(() => {
+    if (cardData.available) return;
+    const newContent = cardData.content.map((r, i) => {
       return r.map((c, j) => (
         <Grid key={`${i} ${j}`} item xs={size}>
           <Paper sx={{display: 'flex', flexDIrection: 'row', flexWrap: 'wrap', justifyContent: 'space-between'}} variant="outlined">
@@ -29,8 +32,9 @@ const Card = () => {
         </Grid>
       ));
     });
+    setContent(newContent);
+    setAvailable();
   }, [cardData]);
-
 
   return (
     <Grid item xs={cardData.width}>

@@ -15,9 +15,10 @@ import {useCard} from './CardContext';
 interface ListItemSliderProps {
   label: string
   val: number
-  setVal: (val: number) => void
+  preSetVal: (val: number) => void
+  setVal?: (val: number) => void
 }
-const ListItemSlider: React.FunctionComponent<ListItemSliderProps> = ({label, val, setVal}) => {
+const ListItemSlider: React.FunctionComponent<ListItemSliderProps> = ({label, val, preSetVal, setVal}) => {
   return (
     <>
       <ListItem>
@@ -33,14 +34,15 @@ const ListItemSlider: React.FunctionComponent<ListItemSliderProps> = ({label, va
           marks
           min={1}
           max={12}
-          onChange={(e, v, a) => setVal(v as number)} />
+          onChangeCommitted={(e, v) => setVal ? setVal(v as number) : null}
+          onChange={(e, v) => preSetVal(v as number)} />
       </ListItem>
     </>
   );
 };
 
 const Drawer: React.FunctionComponent<DrawerProps> = (props) => {
-  const [cardData, setWidth, setRows, setCols] = useCard();
+  const {cardData, setWidth, preSetRows, setRows, preSetCols, setCols} = useCard();
 
   return (
     <MUIDrawer {...props}>
@@ -50,19 +52,22 @@ const Drawer: React.FunctionComponent<DrawerProps> = (props) => {
         <Box sx={{flexGrow: '1'}}/>
         <Divider />
         <List>
+
           <ListItemSlider
             label='Width'
             val={cardData.width}
-            setVal={setWidth}/>
+            preSetVal={setWidth}/>
 
           <ListItemSlider
             label='Columns'
             val={cardData.cols}
+            preSetVal={preSetCols}
             setVal={setCols}/>
 
           <ListItemSlider
             label='Rows'
             val={cardData.rows}
+            preSetVal={preSetRows}
             setVal={setRows}/>
         </List>
       </Box>

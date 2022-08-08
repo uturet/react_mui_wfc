@@ -30,12 +30,14 @@ interface CardDataInterface {
   width: number
   rows: number
   cols: number
+  available: boolean
   content: CardContent
 }
 const CardData: CardDataInterface = {
-  width: 10,
-  rows: 3,
-  cols: 3,
+  width: 12,
+  rows: 1,
+  cols: 1,
+  available: false,
   content: [],
 };
 
@@ -53,13 +55,13 @@ interface SetWidthInterface {
   }
 }
 interface SetRowsInterface {
-  type: 'set-rows'
+  type: 'set-rows'|'preset-rows'
   payload: {
     rows: number
   }
 }
 interface SetColsInterface {
-  type: 'set-cols'
+  type: 'set-cols'|'preset-cols'
   payload: {
     cols: number
   }
@@ -72,38 +74,48 @@ interface SetTypeInterface {
     type: number
   }
 }
-type CardDataReducerAction = SetRowsInterface|SetColsInterface|SetTypeInterface|SetWidthInterface
+interface SetAvailableInterface {
+  type: 'set-available'
+}
+type CardDataReducerAction = SetRowsInterface|SetColsInterface|SetTypeInterface|SetWidthInterface|SetAvailableInterface
 const CardDataReducer = (state: CardDataInterface, action: CardDataReducerAction): CardDataInterface => {
   switch (action.type) {
   case 'set-width':
+    if (state.width === action.payload.width) return state;
     return {...state, width: action.payload.width};
+  case 'preset-rows':
+    if (state.rows === action.payload.rows) return state;
+    return {...state, rows: action.payload.rows};
   case 'set-rows':
-    if (state.rows < action.payload.rows) {
-      const newRows = new Array(action.payload.rows - state.rows).fill(0).map((v) =>
+    if (state.content.length < action.payload.rows) {
+      const newRows = new Array(action.payload.rows - state.content.length).fill(0).map((v) =>
         new Array(state.cols).fill(CardContentTypes.map((_, j) => j)),
       );
-      return {width: state.width, cols: state.cols, rows: action.payload.rows, content: [...state.content, ...newRows]};
+      return {...state, available: false, content: [...state.content, ...newRows]};
     }
-    return {width: state.width, cols: state.cols, rows: action.payload.rows, content: state.content.slice(0, action.payload.rows)};
+    return {...state, available: false, content: state.content.slice(0, action.payload.rows)};
+  case 'preset-cols':
+    if (state.cols === action.payload.cols) return state;
+    return {...state, cols: action.payload.cols};
   case 'set-cols':
-    if (state.cols < action.payload.cols) {
+    if (state.content[0].length < action.payload.cols) {
       return {
-        width: state.width,
-        rows: state.rows,
-        cols: action.payload.cols,
-        content: state.content.map((r) => [...r, ...(new Array(action.payload.cols - state.cols)
+        ...state,
+        available: false,
+        content: state.content.map((r) => [...r, ...(new Array(action.payload.cols - state.content[0].length)
           .fill(CardContentTypes.map((_, j) => j)))]),
       };
     }
     return {
-      width: state.width,
-      rows: state.rows,
-      cols: action.payload.cols,
+      ...state,
+      available: false,
       content: state.content.map((r) => r.slice(0, action.payload.cols)),
     };
   case 'set-type':
     state.content[action.payload.row][action.payload.col] = [action.payload.type];
-    return {...state};
+    return {...state, available: false};
+  case 'set-available':
+    return {...state, available: true};
   default:
     throw Error('Invalid Type');
   }
@@ -113,22 +125,36 @@ const CardContext = createContext(null);
 
 const CardProvider = (props: any) => {
   const [cardData, cardDataDispatch] = useReducer(CardDataReducer, CardData, InitCardData);
+  const setAvailable = () => cardDataDispatch({type: 'set-available'});
   const setWidth = (width: number) => cardDataDispatch({type: 'set-width', payload: {width}});
-  const setRows = (rows: number) => cardDataDispatch({type: 'set-rows', payload: {rows}});
-  const setCols = (cols: number) => cardDataDispatch({type: 'set-cols', payload: {cols}});
+  const preSetRows = (rows: number) => cardDataDispatch({type: 'preset-rows', payload: {rows}});
+  const setRows = async (rows: number) => {
+    if (cardData.content.length !== rows) {
+      cardDataDispatch({type: 'set-rows', payload: {rows}});
+    }
+  };
+  const preSetCols = (cols: number) => cardDataDispatch({type: 'preset-cols', payload: {cols}});
+  const setCols = async (cols: number) => {
+    if (cardData.content[0].length !== cols) {
+      cardDataDispatch({type: 'set-cols', payload: {cols}});
+    }
+  };
   const setType = (row: number, col: number, type: number) => cardDataDispatch(
     {type: 'set-type', payload: {row, col, type}});
 
-  return <CardContext.Provider value={[cardData, setWidth, setRows, setCols, setType]} {...props}/>;
+  return <CardContext.Provider value={{cardData, setWidth, preSetRows, setRows, preSetCols, setCols, setType, setAvailable}} {...props}/>;
 };
 
-type useCardContext = [
-  CardDataInterface,
-  (width: number) => void,
-  (rows: number) => void,
-  (cols: number) => void,
-  (row: number, col: number, type: number) => void,
-]
+type useCardContext = {
+  cardData: CardDataInterface,
+  setWidth: (width: number) => void,
+  preSetRows: (rows: number) => void,
+  setRows: (rows: number) => void,
+  preSetCols: (cols: number) => void,
+  setCols: (cols: number) => void,
+  setType: (row: number, col: number, type: number) => void,
+  setAvailable: () => void,
+}
 const useCard = ():useCardContext => {
   const context = useContext(CardContext);
   if (!context) throw new Error('Not Inside the Provider');
