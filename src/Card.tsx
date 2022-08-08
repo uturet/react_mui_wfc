@@ -19,7 +19,7 @@ const Card = () => {
       return r.map((c, j) => (
         <Grid key={`${i} ${j}`} item xs={size}>
           <Paper sx={{display: 'flex', flexDIrection: 'row', flexWrap: 'wrap', justifyContent: 'space-between'}} variant="outlined">
-            {c.map((t) => {
+            {Array.from(c).map((t) => {
               return <Button
                 key={`${i} ${j} ${CardContentTypes[t]}`}
                 size='small'
