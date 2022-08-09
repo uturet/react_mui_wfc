@@ -1,4 +1,4 @@
-import React, {useMemo, useLayoutEffect, useState} from 'react';
+import React, {useMemo, useLayoutEffect, useState, ReactNode} from 'react';
 import {
   Card as MUICard,
   CardContent,
@@ -6,7 +6,43 @@ import {
   Button,
   Paper,
 } from '@mui/material';
-import {useCard, CardContentTypes} from './CardContext';
+import {useCard} from './CardContext';
+import {
+  ChipGeneric,
+  DividerGeneric,
+  TableGeneric,
+  ChartGeneric,
+  TextGeneric,
+  ImageGeneric,
+  ImageListGeneric,
+  ButtonGeneric,
+  CheckboxGeneric,
+  RadioButtonGeneric,
+  SelectGeneric,
+  SliderGeneric,
+  SwitchGeneric,
+  TextFieldGeneric,
+} from './Generic';
+
+
+const typeComponent: {
+  [name: string]: ReactNode
+} = {
+  'Chip': <ChipGeneric/>,
+  'Divider': <DividerGeneric/>,
+  'Table': <TableGeneric/>,
+  'Chart': <ChartGeneric/>,
+  'Text': <TextGeneric/>,
+  'Image': <ImageGeneric/>,
+  'Image list': <ImageListGeneric/>,
+  'Button': <ButtonGeneric/>,
+  'Checkbox': <CheckboxGeneric/>,
+  'Radio button': <RadioButtonGeneric/>,
+  'Select': <SelectGeneric/>,
+  'Slider': <SliderGeneric/>,
+  'Switch': <SwitchGeneric/>,
+  'Text field': <TextFieldGeneric/>,
+};
 
 interface CardCellProps {
   row: number
@@ -18,8 +54,16 @@ const CardCell: React.FunctionComponent<CardCellProps> = ({row, col, size}) => {
   const [buttons, setButtons] = useState<string[]>([]);
   useLayoutEffect(() => {
     if (cardData.content.length-1 < row || cardData.content[0].length-1 < col) return;
-    setButtons(Array.from(cardData.content[row][col]).map((t) => CardContentTypes[t]));
+    setButtons(Array.from(cardData.content[row][col]));
   }, [cardData.content[row] ? cardData.content[row][col]: undefined]);
+
+  if (cardData.collapsed) {
+    return (
+      <Grid item xs={size}>
+        {typeComponent[buttons.values().next().value]}
+      </Grid>
+    );
+  }
 
   return (
     <Grid item xs={size}>

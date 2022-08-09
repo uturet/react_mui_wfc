@@ -1,29 +1,31 @@
 import React, {createContext, useContext, useReducer} from 'react';
-import {CardContentRelations, CardContentTypes} from './CardConfig';
+import {CardTypeRelations, CardContentTypes} from './CardConfig';
 
-type CardContent = Set<number>[][]
+type CardContent = Set<string>[][]
 interface CardDataInterface {
   width: number
   ready: boolean
+  collapsed: boolean
   content: CardContent
 }
 const CardData: CardDataInterface = {
   width: 12,
   ready: false,
+  collapsed: false,
   content: [],
 };
 
 const InitCardData = (initialData: CardDataInterface): CardDataInterface => {
   const rows = 3;
   const cols = 3;
-  const content: Set<number>[][] = new Array(rows).fill(0).map((v) =>
-    new Array(cols).fill(0).map((v) => new Set(CardContentTypes.map((_, i) => i))),
+  const content: CardContent = new Array(rows).fill(0).map((v) =>
+    new Array(cols).fill(0).map((v) => new Set(CardContentTypes)),
   );
   return {...initialData, ready: true, content};
 };
 
 const vaweFunction = (row: number, col: number, cardData: CardDataInterface): CardDataInterface => {
-  if (cardData.content[row][col].size === CardContentRelations.length) return cardData;
+  if (cardData.content[row][col].size === CardTypeRelations.size) return cardData;
   const nextCells = new Set<number>();
   const changedCells = new Set<number>();
   const posToIndex = (row: number, col: number): number => (cardData.content[0].length * row) + col;
@@ -35,7 +37,7 @@ const vaweFunction = (row: number, col: number, cardData: CardDataInterface): Ca
   while (nextCells.size > 0) {
     const cell = indexToPos(nextCells.values().next().value);
     nextCells.delete(nextCells.values().next().value);
-    if (cardData.content[cell[0]][cell[1]].size === CardContentRelations.length) continue;
+    if (cardData.content[cell[0]][cell[1]].size === CardTypeRelations.size) continue;
 
     dir.forEach((d, i) => {
       const r: number = cell[0] + d[0];
@@ -45,9 +47,10 @@ const vaweFunction = (row: number, col: number, cardData: CardDataInterface): Ca
         cardData.content[r][c].size > 1 && !changedCells.has(index)) {
         nextCells.add(index);
         changedCells.add(index);
-        const ready = new Set<number>();
+        const ready = new Set<string>();
         cardData.content[cell[0]][cell[1]].forEach((t) => {
-          CardContentRelations[t][i].forEach((v) => cardData.content[r][c].has(v) ? ready.add(v) : null);
+          const v = CardTypeRelations.get(t);
+          if (v) v[i].forEach((v) => cardData.content[r][c].has(v) ? ready.add(v) : null);
         });
         cardData.content[r][c] = ready;
       }
@@ -115,7 +118,7 @@ interface SetTypeInterface {
   payload: {
     col: number
     row: number
-    type: number
+    type: string
   }
 }
 interface SetReadyInterface {
@@ -137,7 +140,7 @@ const CardDataReducer = (state: CardDataInterface, action: CardDataReducerAction
   case 'set-rows':
     if (state.content.length < action.payload.rows) {
       const newRows = new Array(action.payload.rows - state.content.length).fill(0).map((v) =>
-        new Array(state.content[0].length).fill(0).map((v) => new Set(CardContentTypes.map((_, j) => j))),
+        new Array(state.content[0].length).fill(0).map((v) => new Set(CardContentTypes)),
       );
       const prevLastRow = state.content.length-1;
       const newState: CardDataInterface = {...state, ready: true, content: [...state.content, ...newRows]};
@@ -152,7 +155,7 @@ const CardDataReducer = (state: CardDataInterface, action: CardDataReducerAction
         ...state,
         ready: true,
         content: state.content.map((r) => [...r, ...(new Array(action.payload.cols - prevCols)
-          .fill(0).map((v) => new Set(CardContentTypes.map((_, j) => j))))]),
+          .fill(0).map((v) => new Set(CardContentTypes)))]),
       };
 
       newState.content.forEach((r, i) => vaweFunction(i, prevCols-1, newState));
@@ -164,17 +167,17 @@ const CardDataReducer = (state: CardDataInterface, action: CardDataReducerAction
       content: state.content.map((r) => r.slice(0, action.payload.cols)),
     };
   case 'set-type':
-    state.content[action.payload.row][action.payload.col] = new Set<number>([action.payload.type]);
+    state.content[action.payload.row][action.payload.col] = new Set<string>([action.payload.type]);
     return vaweFunction(action.payload.row, action.payload.col, {...state, ready: true});
   case 'set-ready':
     return {...state, ready: action.payload.ready};
   case 'clear':
-    const content: Set<number>[][] = new Array(state.content.length).fill(0).map((v) =>
-      new Array(state.content[0].length).fill(0).map((v) => new Set(CardContentTypes.map((_, i) => i))),
+    const content: Set<string>[][] = new Array(state.content.length).fill(0).map((v) =>
+      new Array(state.content[0].length).fill(0).map((v) => new Set(CardContentTypes)),
     );
-    return {...state, ready: true, content};
+    return {...state, collapsed: false, ready: true, content};
   case 'collapse':
-    return vaweFunctionCollapse({...state, ready: true});
+    return vaweFunctionCollapse({...state, collapsed: true, ready: true});
   default:
     throw Error('Invalid Type');
   }
@@ -204,7 +207,7 @@ const CardProvider = (props: any) => {
   };
   const setType = (row: number, col: number, type: string) => {
     cardDataDispatch({type: 'set-ready', payload: {ready: false}});
-    cardDataDispatch({type: 'set-type', payload: {row, col, type: CardContentTypes.indexOf(type)}});
+    cardDataDispatch({type: 'set-type', payload: {row, col, type}});
   };
   const clear = () => {
     cardDataDispatch({type: 'set-ready', payload: {ready: false}});

@@ -1,103 +1,95 @@
-type CardContent = Map<string, Set<number>[]>
-const CardContent: CardContent = new Map([
+type CardTypeRelations = Map<string, Set<string>[]>
+export const CardTypeRelations: CardTypeRelations = new Map([
   ['Chip', [
-    new Set<number>(),
-    new Set<number>(),
-    new Set<number>(),
-    new Set<number>(),
+    new Set<string>(),
+    new Set<string>(),
+    new Set<string>(),
+    new Set<string>(),
   ]],
   ['Divider', [
-    new Set<number>(),
-    new Set<number>([1]),
-    new Set<number>(),
-    new Set<number>([1]),
+    new Set<string>(),
+    new Set<string>(['Divider']),
+    new Set<string>(),
+    new Set<string>(['Divider']),
   ]],
   ['Table', [
-    new Set<number>(),
-    new Set<number>([2, 3]),
-    new Set<number>(),
-    new Set<number>([2, 3]),
-  ]],
-  ['Chart', [
-    new Set<number>(),
-    new Set<number>([2, 3]),
-    new Set<number>(),
-    new Set<number>([2, 3]),
+    new Set<string>(),
+    new Set<string>(['Table']),
+    new Set<string>(),
+    new Set<string>(['Table']),
   ]],
   ['Text', [
-    new Set<number>(),
-    new Set<number>([4, 0, 7]),
-    new Set<number>(),
-    new Set<number>([4, 0, 7]),
+    new Set<string>(),
+    new Set<string>(['Text', 'Chip', 'Button']),
+    new Set<string>(),
+    new Set<string>(['Text', 'Chip', 'Button']),
   ]],
   ['Image', [
-    new Set<number>(),
-    new Set<number>([4, 5, 6]),
-    new Set<number>(),
-    new Set<number>([4, 5, 6]),
+    new Set<string>(),
+    new Set<string>(['Text', 'Image', 'Image list']),
+    new Set<string>(),
+    new Set<string>(['Text', 'Image', 'Image list']),
   ]],
   ['Image list', [
-    new Set<number>(),
-    new Set<number>([5, 6]),
-    new Set<number>(),
-    new Set<number>([5, 6]),
+    new Set<string>(),
+    new Set<string>(['Image', 'Image list']),
+    new Set<string>(),
+    new Set<string>(['Image', 'Image list']),
   ]],
   ['Button', [
-    new Set<number>(),
-    new Set<number>(),
-    new Set<number>(),
-    new Set<number>(),
+    new Set<string>(),
+    new Set<string>(),
+    new Set<string>(),
+    new Set<string>(),
   ]],
   ['Checkbox', [
-    new Set<number>(),
-    new Set<number>([4, 7, 0]),
-    new Set<number>(),
-    new Set<number>([4, 7, 0]),
+    new Set<string>(),
+    new Set<string>(['Text', 'Button', 'Chip']),
+    new Set<string>(),
+    new Set<string>(['Text', 'Button', 'Chip']),
   ]],
   ['Radio button', [
-    new Set<number>(),
-    new Set<number>([4, 7, 0]),
-    new Set<number>(),
-    new Set<number>([4, 7, 0]),
+    new Set<string>(),
+    new Set<string>(['Text', 'Button', 'Chip']),
+    new Set<string>(),
+    new Set<string>(['Text', 'Button', 'Chip']),
   ]],
   ['Select', [
-    new Set<number>(),
-    new Set<number>([4, 7, 0]),
-    new Set<number>(),
-    new Set<number>([4, 7, 0]),
+    new Set<string>(),
+    new Set<string>(['Text', 'Button', 'Chip']),
+    new Set<string>(),
+    new Set<string>(['Text', 'Button', 'Chip']),
   ]],
   ['Slider', [
-    new Set<number>(),
-    new Set<number>([4, 7, 0]),
-    new Set<number>(),
-    new Set<number>([4, 7, 0]),
+    new Set<string>(),
+    new Set<string>(['Text', 'Button', 'Chip']),
+    new Set<string>(),
+    new Set<string>(['Text', 'Button', 'Chip']),
   ]],
   ['Switch', [
-    new Set<number>(),
-    new Set<number>([4, 7, 0]),
-    new Set<number>(),
-    new Set<number>([4, 7, 0]),
+    new Set<string>(),
+    new Set<string>(['Text', 'Button', 'Chip']),
+    new Set<string>(),
+    new Set<string>(['Text', 'Button', 'Chip']),
   ]],
   ['Text field', [
-    new Set<number>(),
-    new Set<number>([4, 7, 0]),
-    new Set<number>(),
-    new Set<number>([4, 7, 0]),
+    new Set<string>(),
+    new Set<string>(['Text', 'Button', 'Chip']),
+    new Set<string>(),
+    new Set<string>(['Text', 'Button', 'Chip']),
   ]],
 ]);
-const autoFillCardContent = (cc: CardContent) => {
-  const types = Array.from(cc.keys());
+const autoFillCardTypeRelations = (cc: CardTypeRelations) => {
   const defaultRelations = [
-    new Set<number>(types.map((v, i) => i)),
-    new Set<number>(types.map((v, i) => i)),
-    new Set<number>(types.map((v, i) => i)),
-    new Set<number>(types.map((v, i) => i)),
+    new Set<string>(Array.from(cc.keys())),
+    new Set<string>(Array.from(cc.keys())),
+    new Set<string>(Array.from(cc.keys())),
+    new Set<string>(Array.from(cc.keys())),
   ];
   cc.forEach((relations, type) => {
-    const typeIndex = types.indexOf(type);
     relations.forEach((rs, side) => {
       if (rs.size === 0) return;
-      defaultRelations[(side+2)%4].delete(typeIndex);
+      defaultRelations[(side+2)%4].delete(type);
     });
   });
   cc.forEach((relations, type) => {
@@ -110,18 +102,13 @@ const autoFillCardContent = (cc: CardContent) => {
   });
   cc.forEach((relations, type) => {
     relations.forEach((rs, side) => {
-      const typeIndex = types.indexOf(type);
       rs.forEach(((r) => {
-        if (r === typeIndex) return;
-        const v = cc.get(types[r]);
-        if (v) v[(side+2)%4].add(typeIndex);
+        if (r === type) return;
+        const v = cc.get(r);
+        if (v) v[(side+2)%4].add(type);
       }));
     });
   });
 };
-autoFillCardContent(CardContent);
-
-export const CardContentTypes: string[] = Array.from(CardContent.keys());
-// [ [top{}, right{}, bot{}, left{}] ]
-export type CardContentRelations = Set<number>[][]
-export const CardContentRelations: CardContentRelations = Array.from(CardContent.values());
+autoFillCardTypeRelations(CardTypeRelations);
+export const CardContentTypes: string[] = Array.from(CardTypeRelations.keys());
