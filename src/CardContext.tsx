@@ -170,9 +170,9 @@ const CardProvider = (props: any) => {
       cardDataDispatch({type: 'set-cols', payload: {cols}});
     }
   };
-  const setType = (row: number, col: number, type: number) => {
+  const setType = (row: number, col: number, type: string) => {
     cardDataDispatch({type: 'set-ready', payload: {ready: false}});
-    cardDataDispatch({type: 'set-type', payload: {row, col, type}});
+    cardDataDispatch({type: 'set-type', payload: {row, col, type: CardContentTypes.indexOf(type)}});
   };
   const clear = () => {
     cardDataDispatch({type: 'set-ready', payload: {ready: false}});
@@ -203,7 +203,7 @@ type useCardContext = {
   setWidth: (width: number) => void,
   setRows: (rows: number) => void,
   setCols: (cols: number) => void,
-  setType: (row: number, col: number, type: number) => void,
+  setType: (row: number, col: number, type: string) => void,
   clear: () => void,
   generate: () => void,
 }

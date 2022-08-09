@@ -29,7 +29,7 @@ const CardCell: React.FunctionComponent<CardCellProps> = ({row, col, size}) => {
             key={`${t}`}
             size='small'
             variant="text"
-            onClick={() => setType(row, col, i)}>
+            onClick={() => setType(row, col, t)}>
             {t}
           </Button>;
         })}

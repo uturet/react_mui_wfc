@@ -76,14 +76,14 @@ const Drawer: React.FunctionComponent<DrawerProps> = (props) => {
           <ListItemSlider
             label='Columns'
             val={cols}
-            max={6}
+            max={12}
             preSetVal={preSetCols}
             setVal={setCols}/>
 
           <ListItemSlider
             label='Rows'
             val={rows}
-            max={6}
+            max={12}
             preSetVal={preSetRows}
             setVal={setRows}/>
         </List>
