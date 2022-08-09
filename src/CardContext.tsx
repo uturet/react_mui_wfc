@@ -57,6 +57,38 @@ const vaweFunction = (row: number, col: number, cardData: CardDataInterface): Ca
 };
 
 const vaweFunctionCollapse = (cardData: CardDataInterface): CardDataInterface => {
+  let row = 0;
+  let col = 0;
+  let begin = true;
+  cardData.content.forEach((r, i) => {
+    r.forEach((c, j) => {
+      if (c.size < cardData.content[row][col].size) {
+        row = i;
+        col = j;
+      }
+    });
+  });
+
+  while (begin) {
+    if (cardData.content[row][col].size > 0) {
+      cardData.content[row][col] = new Set([
+        Array.from(cardData.content[row][col])[Math.floor(Math.random()*cardData.content[row][col].size)],
+      ]);
+    }
+    cardData = vaweFunction(row, col, cardData);
+    begin = false;
+    cardData.content.forEach((r, i) => {
+      r.forEach((c, j) => {
+        if ((cardData.content[row][col].size === 1 && c.size > 1) ||
+        (c.size > 1 && c.size < cardData.content[row][col].size)) {
+          row = i;
+          col = j;
+          begin = true;
+        }
+      });
+    });
+  }
+
   return cardData;
 };
 
@@ -180,9 +212,7 @@ const CardProvider = (props: any) => {
   };
   const generate = () => {
     cardDataDispatch({type: 'set-ready', payload: {ready: false}});
-    setTimeout(() => {
-      cardDataDispatch({type: 'collapse'});
-    }, 1000);
+    cardDataDispatch({type: 'collapse'});
   };
 
   return <CardContext.Provider
