@@ -44,10 +44,10 @@ const ListItemSlider: React.FunctionComponent<ListItemSliderProps> = ({label, ma
 };
 
 const Drawer: React.FunctionComponent<DrawerProps> = (props) => {
-  const {cardMeta, setWidth, setRows, setCols, clear, generate} = useCard();
-  const [width, preSetWidth] = useState<number>(cardMeta.width);
-  const [rows, preSetRows] = useState<number>(cardMeta.rows);
-  const [cols, preSetCols] = useState<number>(cardMeta.cols);
+  const {cardData, setWidth, setRows, setCols, clear, generate} = useCard();
+  const [width, preSetWidth] = useState<number>(cardData.width);
+  const [rows, preSetRows] = useState<number>(cardData.content.length);
+  const [cols, preSetCols] = useState<number>(cardData.content[0].length);
 
   return (
     <MUIDrawer {...props}>

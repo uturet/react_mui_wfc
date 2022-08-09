@@ -41,25 +41,25 @@ const CardCell: React.FunctionComponent<CardCellProps> = ({row, col, size}) => {
 
 const Card = () => {
   const [content, setContent] = useState<ReactElement[][]|null>(null);
-  const {cardMeta, cardData, setAvailable} = useCard();
+  const {cardData, setReady} = useCard();
 
   useEffect(() => {
-    if (cardData.available) return;
+    if (cardData.ready) return;
     const newContent = cardData.content.map((r, i) => {
       return r.map((c, j) => <CardCell
         key={`${i} ${j}`}
         row={i}
         col={j}
-        size={12/cardMeta.cols}/>);
+        size={12/cardData.content[0].length}/>);
     });
     setContent(newContent);
-    setAvailable();
-  }, [cardData.available, cardData.content.length, cardData.content[0].length]);
+    setReady();
+  }, [cardData.ready, cardData.content.length, cardData.content[0].length]);
 
-  if (!cardData.available) return null;
+  if (!cardData.ready) return null;
 
   return (
-    <Grid item xs={cardMeta.width}>
+    <Grid item xs={cardData.width}>
       <MUICard elevation={16} sx={{margin: 'auto'}}>
         <CardContent>
           <Grid
