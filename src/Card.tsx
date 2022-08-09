@@ -1,4 +1,4 @@
-import React, {useEffect, useLayoutEffect, useState, ReactElement} from 'react';
+import React, {useMemo, useLayoutEffect, useState} from 'react';
 import {
   Card as MUICard,
   CardContent,
@@ -40,21 +40,14 @@ const CardCell: React.FunctionComponent<CardCellProps> = ({row, col, size}) => {
 
 
 const Card = () => {
-  const [content, setContent] = useState<ReactElement[][]|null>(null);
-  const {cardData, setReady} = useCard();
-
-  useEffect(() => {
-    if (cardData.ready) return;
-    const newContent = cardData.content.map((r, i) => {
-      return r.map((c, j) => <CardCell
-        key={`${i} ${j}`}
-        row={i}
-        col={j}
-        size={12/cardData.content[0].length}/>);
-    });
-    setContent(newContent);
-    setReady();
-  }, [cardData.ready, cardData.content.length, cardData.content[0].length]);
+  const {cardData} = useCard();
+  const content = useMemo(() => cardData.content.map((r, i) => {
+    return r.map((c, j) => <CardCell
+      key={`${i} ${j}`}
+      row={i}
+      col={j}
+      size={12/cardData.content[0].length}/>);
+  }), [cardData.ready, cardData.content.length, cardData.content[0].length]);
 
   if (!cardData.ready) return null;
 

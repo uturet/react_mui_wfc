@@ -19,7 +19,7 @@ const InitCardData = (initialData: CardDataInterface): CardDataInterface => {
   const content: Set<number>[][] = new Array(rows).fill(0).map((v) =>
     new Array(cols).fill(0).map((v) => new Set(CardContentTypes.map((_, i) => i))),
   );
-  return {...initialData, content};
+  return {...initialData, ready: true, content};
 };
 
 const vaweFunction = (row: number, col: number, cardData: CardDataInterface): CardDataInterface => {
@@ -94,6 +94,7 @@ interface SetReadyInterface {
 }
 interface ClearCallsInterface {
   type: 'clear'|'collapse'
+  payload?: undefined
 }
 type CardDataReducerAction = SetRowsInterface|SetColsInterface|SetTypeInterface|
 SetWidthInterface|SetReadyInterface|ClearCallsInterface
@@ -107,17 +108,17 @@ const CardDataReducer = (state: CardDataInterface, action: CardDataReducerAction
         new Array(state.content[0].length).fill(0).map((v) => new Set(CardContentTypes.map((_, j) => j))),
       );
       const prevLastRow = state.content.length-1;
-      const newState: CardDataInterface = {...state, ready: false, content: [...state.content, ...newRows]};
+      const newState: CardDataInterface = {...state, ready: true, content: [...state.content, ...newRows]};
       newState.content[prevLastRow].forEach((c, i) => vaweFunction(prevLastRow, i, newState));
       return newState;
     }
-    return {...state, ready: false, content: state.content.slice(0, action.payload.rows)};
+    return {...state, ready: true, content: state.content.slice(0, action.payload.rows)};
   case 'set-cols':
     if (state.content[0].length < action.payload.cols) {
       const prevCols = state.content[0].length;
       const newState: CardDataInterface = {
         ...state,
-        ready: false,
+        ready: true,
         content: state.content.map((r) => [...r, ...(new Array(action.payload.cols - prevCols)
           .fill(0).map((v) => new Set(CardContentTypes.map((_, j) => j))))]),
       };
@@ -127,19 +128,19 @@ const CardDataReducer = (state: CardDataInterface, action: CardDataReducerAction
     }
     return {
       ...state,
-      ready: false,
+      ready: true,
       content: state.content.map((r) => r.slice(0, action.payload.cols)),
     };
   case 'set-type':
     state.content[action.payload.row][action.payload.col] = new Set<number>([action.payload.type]);
-    return vaweFunction(action.payload.row, action.payload.col, {...state, ready: false});
+    return vaweFunction(action.payload.row, action.payload.col, {...state, ready: true});
   case 'set-ready':
     return {...state, ready: action.payload.ready};
   case 'clear':
     const content: Set<number>[][] = new Array(state.content.length).fill(0).map((v) =>
       new Array(state.content[0].length).fill(0).map((v) => new Set(CardContentTypes.map((_, i) => i))),
     );
-    return {...state, content};
+    return {...state, ready: true, content};
   case 'collapse':
     return vaweFunctionCollapse({...state, ready: true});
   default:
@@ -151,27 +152,37 @@ const CardContext = createContext(null);
 
 const CardProvider = (props: any) => {
   const [cardData, cardDataDispatch] = useReducer(CardDataReducer, CardData, InitCardData);
-  const setReady = () => cardDataDispatch({type: 'set-ready', payload: {ready: true}});
   const setWidth = (width: number) => {
     if (cardData.width === width) return;
     cardDataDispatch({type: 'set-width', payload: {width}});
   };
   const setRows = async (rows: number) => {
     if (cardData.content.length !== rows) {
+      cardDataDispatch({type: 'set-ready', payload: {ready: false}});
       cardDataDispatch({type: 'set-rows', payload: {rows}});
     }
   };
-  const setCols = async (cols: number) => {
+
+
+  const setCols = (cols: number) => {
     if (cardData.content[0].length !== cols) {
+      cardDataDispatch({type: 'set-ready', payload: {ready: false}});
       cardDataDispatch({type: 'set-cols', payload: {cols}});
     }
   };
   const setType = (row: number, col: number, type: number) => {
+    cardDataDispatch({type: 'set-ready', payload: {ready: false}});
     cardDataDispatch({type: 'set-type', payload: {row, col, type}});
   };
-  const generate = async () => {
+  const clear = () => {
     cardDataDispatch({type: 'set-ready', payload: {ready: false}});
-    cardDataDispatch({type: 'collapse'});
+    cardDataDispatch({type: 'clear'});
+  };
+  const generate = () => {
+    cardDataDispatch({type: 'set-ready', payload: {ready: false}});
+    setTimeout(() => {
+      cardDataDispatch({type: 'collapse'});
+    }, 1000);
   };
 
   return <CardContext.Provider
@@ -181,8 +192,7 @@ const CardProvider = (props: any) => {
       setRows,
       setCols,
       setType,
-      setReady,
-      clear: () => cardDataDispatch({type: 'clear'}),
+      clear,
       generate,
     }}
     {...props}/>;
@@ -194,7 +204,6 @@ type useCardContext = {
   setRows: (rows: number) => void,
   setCols: (cols: number) => void,
   setType: (row: number, col: number, type: number) => void,
-  setReady: () => void,
   clear: () => void,
   generate: () => void,
 }
