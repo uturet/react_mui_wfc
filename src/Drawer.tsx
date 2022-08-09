@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   Drawer as MUIDrawer,
   DrawerProps,
@@ -9,16 +9,18 @@ import {
   Slider,
   Typography,
   Box,
+  Button,
 } from '@mui/material';
 import {useCard} from './CardContext';
 
 interface ListItemSliderProps {
   label: string
+  max: number
   val: number
   preSetVal: (val: number) => void
   setVal?: (val: number) => void
 }
-const ListItemSlider: React.FunctionComponent<ListItemSliderProps> = ({label, val, preSetVal, setVal}) => {
+const ListItemSlider: React.FunctionComponent<ListItemSliderProps> = ({label, max, val, preSetVal, setVal}) => {
   return (
     <>
       <ListItem>
@@ -33,7 +35,7 @@ const ListItemSlider: React.FunctionComponent<ListItemSliderProps> = ({label, va
           step={1}
           marks
           min={1}
-          max={12}
+          max={max}
           onChangeCommitted={(e, v) => setVal ? setVal(v as number) : null}
           onChange={(e, v) => preSetVal(v as number)} />
       </ListItem>
@@ -42,7 +44,10 @@ const ListItemSlider: React.FunctionComponent<ListItemSliderProps> = ({label, va
 };
 
 const Drawer: React.FunctionComponent<DrawerProps> = (props) => {
-  const {cardData, setWidth, preSetRows, setRows, preSetCols, setCols} = useCard();
+  const {cardMeta, setWidth, setRows, setCols, clear, generate} = useCard();
+  const [width, preSetWidth] = useState<number>(cardMeta.width);
+  const [rows, preSetRows] = useState<number>(cardMeta.rows);
+  const [cols, preSetCols] = useState<number>(cardMeta.cols);
 
   return (
     <MUIDrawer {...props}>
@@ -50,23 +55,35 @@ const Drawer: React.FunctionComponent<DrawerProps> = (props) => {
         <Toolbar />
         <Divider />
         <Box sx={{flexGrow: '1'}}/>
+
+        <List>
+          <ListItem>
+            <Button onClick={clear} fullWidth>Clear</Button>
+          </ListItem>
+          <ListItem>
+            <Button onClick={generate} fullWidth>Generate</Button>
+          </ListItem>
+        </List>
         <Divider />
         <List>
-
           <ListItemSlider
             label='Width'
-            val={cardData.width}
-            preSetVal={setWidth}/>
+            val={width}
+            max={12}
+            setVal={setWidth}
+            preSetVal={preSetWidth}/>
 
           <ListItemSlider
             label='Columns'
-            val={cardData.cols}
+            val={cols}
+            max={6}
             preSetVal={preSetCols}
             setVal={setCols}/>
 
           <ListItemSlider
             label='Rows'
-            val={cardData.rows}
+            val={rows}
+            max={6}
             preSetVal={preSetRows}
             setVal={setRows}/>
         </List>

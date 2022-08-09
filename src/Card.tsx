@@ -1,4 +1,4 @@
-import React, {useEffect, useState, ReactElement} from 'react';
+import React, {useEffect, useLayoutEffect, useState, ReactElement} from 'react';
 import {
   Card as MUICard,
   CardContent,
@@ -8,36 +8,58 @@ import {
 } from '@mui/material';
 import {useCard, CardContentTypes} from './CardContext';
 
+interface CardCellProps {
+  row: number
+  col: number
+  size: number
+}
+const CardCell: React.FunctionComponent<CardCellProps> = ({row, col, size}) => {
+  const {cardData, setType} = useCard();
+  const [buttons, setButtons] = useState<string[]>([]);
+  useLayoutEffect(() => {
+    if (cardData.content.length-1 < row || cardData.content[0].length-1 < col) return;
+    setButtons(Array.from(cardData.content[row][col]).map((t) => CardContentTypes[t]));
+  }, [cardData.content[row] ? cardData.content[row][col]: undefined]);
+
+  return (
+    <Grid item xs={size}>
+      <Paper sx={{display: 'flex', flexDIrection: 'row', flexWrap: 'wrap', justifyContent: 'space-between'}} variant="outlined">
+        {buttons.map((t, i) => {
+          return <Button
+            key={`${t}`}
+            size='small'
+            variant="text"
+            onClick={() => setType(row, col, i)}>
+            {t}
+          </Button>;
+        })}
+      </Paper>
+    </Grid>
+  );
+};
+
+
 const Card = () => {
   const [content, setContent] = useState<ReactElement[][]|null>(null);
-  const {cardData, setType, setAvailable} = useCard();
-  const size = 12/cardData.cols;
+  const {cardMeta, cardData, setAvailable} = useCard();
 
   useEffect(() => {
     if (cardData.available) return;
     const newContent = cardData.content.map((r, i) => {
-      return r.map((c, j) => (
-        <Grid key={`${i} ${j}`} item xs={size}>
-          <Paper sx={{display: 'flex', flexDIrection: 'row', flexWrap: 'wrap', justifyContent: 'space-between'}} variant="outlined">
-            {Array.from(c).map((t) => {
-              return <Button
-                key={`${i} ${j} ${CardContentTypes[t]}`}
-                size='small'
-                variant="text"
-                onClick={() => setType(i, j, t)}>
-                {CardContentTypes[t]}
-              </Button>;
-            })}
-          </Paper>
-        </Grid>
-      ));
+      return r.map((c, j) => <CardCell
+        key={`${i} ${j}`}
+        row={i}
+        col={j}
+        size={12/cardMeta.cols}/>);
     });
     setContent(newContent);
     setAvailable();
-  }, [cardData]);
+  }, [cardData.available, cardData.content.length, cardData.content[0].length]);
+
+  if (!cardData.available) return null;
 
   return (
-    <Grid item xs={cardData.width}>
+    <Grid item xs={cardMeta.width}>
       <MUICard elevation={16} sx={{margin: 'auto'}}>
         <CardContent>
           <Grid
