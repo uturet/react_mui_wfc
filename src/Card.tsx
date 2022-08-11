@@ -61,7 +61,13 @@ const CardCell: React.FunctionComponent<CardCellProps> = ({row, col}) => {
 
     return (
       <Grid item xs={size}>
-        {typeComponent[buttons.values().next().value](cardData.content[row][col].size)}
+        <Grid
+          container
+          direction="row"
+          justifyContent="space-around"
+          alignItems="center">
+          {typeComponent[buttons.values().next().value](cardData.content[row][col].size)}
+        </Grid>
       </Grid>
     );
   }
@@ -104,7 +110,7 @@ const Card = () => {
         <CardContent>
           <Grid
             container
-            spacing={2}
+            spacing={4}
             direction="row"
             justifyContent="center"
             alignItems="center">

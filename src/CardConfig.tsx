@@ -50,9 +50,9 @@ export const CardTypeRelations: CardTypeRelations = new Map([
   ]],
   ['Radio button', [
     new Set<string>(),
-    new Set<string>(['Text', 'Button', 'Chip']),
+    new Set<string>(['Text', 'Button', 'Chip', 'Radio button']),
     new Set<string>(),
-    new Set<string>(['Text', 'Button', 'Chip']),
+    new Set<string>(['Text', 'Button', 'Chip', 'Radio button']),
   ]],
   ['Select', [
     new Set<string>(),

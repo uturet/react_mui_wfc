@@ -17,10 +17,12 @@ interface ListItemSliderProps {
   label: string
   max: number
   val: number
+  disabled: boolean
   preSetVal: (val: number) => void
   setVal?: (val: number) => void
 }
-const ListItemSlider: React.FunctionComponent<ListItemSliderProps> = ({label, max, val, preSetVal, setVal}) => {
+const ListItemSlider: React.FunctionComponent<ListItemSliderProps> = (
+  {label, max, val, disabled, preSetVal, setVal}) => {
   return (
     <>
       <ListItem>
@@ -30,6 +32,7 @@ const ListItemSlider: React.FunctionComponent<ListItemSliderProps> = ({label, ma
       </ListItem>
       <ListItem>
         <Slider
+          disabled={disabled}
           sx={{width: '95%'}}
           value={val}
           step={1}
@@ -67,6 +70,7 @@ const Drawer: React.FunctionComponent<DrawerProps> = (props) => {
         <Divider />
         <List>
           <ListItemSlider
+            disabled={false}
             label='Width'
             val={width}
             max={12}
@@ -74,6 +78,7 @@ const Drawer: React.FunctionComponent<DrawerProps> = (props) => {
             preSetVal={preSetWidth}/>
 
           <ListItemSlider
+            disabled={cardData.collapsed}
             label='Columns'
             val={cols}
             max={12}
@@ -81,6 +86,7 @@ const Drawer: React.FunctionComponent<DrawerProps> = (props) => {
             setVal={setCols}/>
 
           <ListItemSlider
+            disabled={cardData.collapsed}
             label='Rows'
             val={rows}
             max={12}

@@ -45,6 +45,16 @@ const findJoinedCells = (cardData: CardDataInterface): CardDataInterface => {
   return {...cardData, collapsed: true};
 };
 
+const isCollapsed = (cardData: CardDataInterface): CardDataInterface => {
+  for (let r=0; r<cardData.content.length; r++) {
+    for (let c=0; c<cardData.content[0].length; c++) {
+      if (cardData.content[r][c].values.size > 1) return cardData;
+    }
+  }
+
+  return findJoinedCells(cardData);
+};
+
 const vaweFunction = (row: number, col: number, cardData: CardDataInterface): CardDataInterface => {
   if (cardData.content[row][col].values.size === CardTypeRelations.size) return cardData;
   const nextCells = new Set<number>();
@@ -190,7 +200,7 @@ const CardDataReducer = (state: CardDataInterface, action: CardDataReducerAction
     };
   case 'set-type':
     state.content[action.payload.row][action.payload.col].values = new Set<string>([action.payload.type]);
-    return vaweFunction(action.payload.row, action.payload.col, {...state, ready: true});
+    return isCollapsed(vaweFunction(action.payload.row, action.payload.col, {...state, ready: true}));
   case 'set-ready':
     return {...state, ready: action.payload.ready};
   case 'clear':
