@@ -11,7 +11,6 @@ import {
   ChipGeneric,
   DividerGeneric,
   TableGeneric,
-  ChartGeneric,
   TextGeneric,
   ImageGeneric,
   ImageListGeneric,
@@ -26,41 +25,43 @@ import {
 
 
 const typeComponent: {
-  [name: string]: ReactNode
+  [name: string]: (size: number) => ReactNode
 } = {
-  'Chip': <ChipGeneric/>,
-  'Divider': <DividerGeneric/>,
-  'Table': <TableGeneric/>,
-  'Chart': <ChartGeneric/>,
-  'Text': <TextGeneric/>,
-  'Image': <ImageGeneric/>,
-  'Image list': <ImageListGeneric/>,
-  'Button': <ButtonGeneric/>,
-  'Checkbox': <CheckboxGeneric/>,
-  'Radio button': <RadioButtonGeneric/>,
-  'Select': <SelectGeneric/>,
-  'Slider': <SliderGeneric/>,
-  'Switch': <SwitchGeneric/>,
-  'Text field': <TextFieldGeneric/>,
+  'Chip': (size) => <ChipGeneric size={size}/>,
+  'Divider': (size) => <DividerGeneric size={size}/>,
+  'Table': (size) => <TableGeneric size={size}/>,
+  'Text': (size) => <TextGeneric size={size}/>,
+  'Image': (size) => <ImageGeneric size={size}/>,
+  'Image list': (size) => <ImageListGeneric size={size}/>,
+  'Button': (size) => <ButtonGeneric size={size}/>,
+  'Checkbox': (size) => <CheckboxGeneric size={size}/>,
+  'Radio button': (size) => <RadioButtonGeneric size={size}/>,
+  'Select': (size) => <SelectGeneric size={size}/>,
+  'Slider': (size) => <SliderGeneric size={size}/>,
+  'Switch': (size) => <SwitchGeneric size={size}/>,
+  'Text field': (size) => <TextFieldGeneric size={size}/>,
 };
 
 interface CardCellProps {
   row: number
   col: number
-  size: number
 }
-const CardCell: React.FunctionComponent<CardCellProps> = ({row, col, size}) => {
+const CardCell: React.FunctionComponent<CardCellProps> = ({row, col}) => {
   const {cardData, setType} = useCard();
   const [buttons, setButtons] = useState<string[]>([]);
+  const [size, setSize] = useState<number>(1);
   useLayoutEffect(() => {
     if (cardData.content.length-1 < row || cardData.content[0].length-1 < col) return;
-    setButtons(Array.from(cardData.content[row][col]));
-  }, [cardData.content[row] ? cardData.content[row][col]: undefined]);
+    setSize((12/cardData.content[0].length)*cardData.content[row][col].size);
+    setButtons(Array.from(cardData.content[row][col].values));
+  }, [cardData.content[row] ? cardData.content[row][col].values: undefined]);
+
+  if (cardData.content[row] && cardData.content[row][col].size === 0) return null;
 
   if (cardData.collapsed) {
     return (
       <Grid item xs={size}>
-        {typeComponent[buttons.values().next().value]}
+        {typeComponent[buttons.values().next().value](cardData.content[row][col].size)}
       </Grid>
     );
   }
@@ -89,8 +90,7 @@ const Card = () => {
     return r.map((c, j) => <CardCell
       key={`${i} ${j}`}
       row={i}
-      col={j}
-      size={12/cardData.content[0].length}/>);
+      col={j}/>);
   }), [cardData.ready, cardData.content.length, cardData.content[0].length]);
 
   if (!cardData.ready) return null;

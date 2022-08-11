@@ -61,7 +61,7 @@ const Drawer: React.FunctionComponent<DrawerProps> = (props) => {
             <Button onClick={clear} fullWidth>Clear</Button>
           </ListItem>
           <ListItem>
-            <Button onClick={generate} fullWidth>Generate</Button>
+            <Button disabled={cardData.collapsed} onClick={generate} fullWidth>Generate</Button>
           </ListItem>
         </List>
         <Divider />

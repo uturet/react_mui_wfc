@@ -1,3 +1,5 @@
+import React from 'react';
+import {faker} from '@faker-js/faker';
 import {
   Divider,
   TableContainer,
@@ -7,14 +9,17 @@ import {
   TableCell,
   Paper,
 } from '@mui/material';
-import React from 'react';
 
-export const ChipGeneric = () => {
+
+interface GenericProps {
+  size: number
+}
+export const ChipGeneric: React.FunctionComponent<GenericProps> = ({size}) => {
   return (
     <div>Chip</div>
   );
 };
-export const DividerGeneric = () => {
+export const DividerGeneric: React.FunctionComponent<GenericProps> = ({size}) => {
   return (
     <Divider />
   );
@@ -23,17 +28,16 @@ export const DividerGeneric = () => {
 function createData(
   name: string,
   calories: number,
-  fat: number,
 ) {
-  return {name, calories, fat};
+  return {name, calories};
 }
-export const TableGeneric = () => {
+export const TableGeneric: React.FunctionComponent<GenericProps> = ({size}) => {
   const rows = [
-    createData('Aba', 159, 6.0),
-    createData('Ice', 237, 9.0),
-    createData('Ecl', 262, 16.0),
-    createData('Cup', 305, 3.7),
-    createData('Gin', 356, 16.0),
+    createData('Aba', 159),
+    createData('Ice', 237),
+    createData('Ecl', 262),
+    createData('Cup', 305),
+    createData('Gin', 356),
   ];
 
   return (
@@ -49,7 +53,6 @@ export const TableGeneric = () => {
                 {row.name}
               </TableCell>
               <TableCell align="right">{row.calories}</TableCell>
-              <TableCell align="right">{row.fat}</TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -57,57 +60,60 @@ export const TableGeneric = () => {
     </TableContainer>
   );
 };
-export const ChartGeneric = () => {
+export const TextGeneric: React.FunctionComponent<GenericProps> = ({size}) => {
   return (
-    <div>Chart</div>
+    <>
+      {(new Array(size)).fill(0).map((v, i) => <p key={i.toString()}>{faker.lorem.paragraph()}</p>)}
+    </>
   );
 };
-export const TextGeneric = () => {
+export const ImageGeneric: React.FunctionComponent<GenericProps> = ({size}) => {
   return (
-    <div>Text</div>
+    <img
+      src={faker.image.image()}
+      loading="lazy"
+      style={{
+        display: 'block',
+        width: '100%',
+      }}/>
   );
 };
-export const ImageGeneric = () => {
-  return (
-    <div>Image</div>
-  );
-};
-export const ImageListGeneric = () => {
+export const ImageListGeneric: React.FunctionComponent<GenericProps> = ({size}) => {
   return (
     <div>ImageList</div>
   );
 };
-export const ButtonGeneric = () => {
+export const ButtonGeneric: React.FunctionComponent<GenericProps> = ({size}) => {
   return (
     <div>Button</div>
   );
 };
-export const CheckboxGeneric = () => {
+export const CheckboxGeneric: React.FunctionComponent<GenericProps> = ({size}) => {
   return (
     <div>Checkbox</div>
   );
 };
-export const RadioButtonGeneric = () => {
+export const RadioButtonGeneric: React.FunctionComponent<GenericProps> = ({size}) => {
   return (
     <div>RadioButton</div>
   );
 };
-export const SelectGeneric = () => {
+export const SelectGeneric: React.FunctionComponent<GenericProps> = ({size}) => {
   return (
     <div>Select</div>
   );
 };
-export const SliderGeneric = () => {
+export const SliderGeneric: React.FunctionComponent<GenericProps> = ({size}) => {
   return (
     <div>Slider</div>
   );
 };
-export const SwitchGeneric = () => {
+export const SwitchGeneric: React.FunctionComponent<GenericProps> = ({size}) => {
   return (
     <div>Switch</div>
   );
 };
-export const TextFieldGeneric = () => {
+export const TextFieldGeneric: React.FunctionComponent<GenericProps> = ({size}) => {
   return (
     <div>TextField</div>
   );
