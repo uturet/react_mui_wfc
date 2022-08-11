@@ -49,16 +49,16 @@ interface CardCellProps {
 const CardCell: React.FunctionComponent<CardCellProps> = ({row, col}) => {
   const {cardData, setType} = useCard();
   const [buttons, setButtons] = useState<string[]>([]);
-  const [size, setSize] = useState<number>(1);
+  const size = (12/cardData.content[0].length)*cardData.content[row][col].size;
   useLayoutEffect(() => {
     if (cardData.content.length-1 < row || cardData.content[0].length-1 < col) return;
-    setSize((12/cardData.content[0].length)*cardData.content[row][col].size);
     setButtons(Array.from(cardData.content[row][col].values));
   }, [cardData.content[row] ? cardData.content[row][col].values: undefined]);
 
-  if (cardData.content[row] && cardData.content[row][col].size === 0) return null;
 
   if (cardData.collapsed) {
+    if (cardData.content[row][col].size === 0) return null;
+
     return (
       <Grid item xs={size}>
         {typeComponent[buttons.values().next().value](cardData.content[row][col].size)}
@@ -87,10 +87,13 @@ const CardCell: React.FunctionComponent<CardCellProps> = ({row, col}) => {
 const Card = () => {
   const {cardData} = useCard();
   const content = useMemo(() => cardData.content.map((r, i) => {
-    return r.map((c, j) => <CardCell
-      key={`${i} ${j}`}
-      row={i}
-      col={j}/>);
+    return r.map((c, j) => {
+      if (cardData.content[i][j].size === 0) return null;
+      return <CardCell
+        key={`${i} ${j}`}
+        row={i}
+        col={j}/>;
+    });
   }), [cardData.ready, cardData.content.length, cardData.content[0].length]);
 
   if (!cardData.ready) return null;
