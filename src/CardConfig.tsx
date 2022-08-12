@@ -1,7 +1,28 @@
+export const border = '_border_';
+
+
 type CardTypeRelations = Map<string, Set<string>[]>
 export const CardTypeRelations: CardTypeRelations = new Map([
-  ['Chip', [
+  ['Title', [
+    new Set<string>([border, 'Accordion']),
+    new Set<string>(['Title', 'Empty']),
     new Set<string>(),
+    new Set<string>(['Title', 'Empty']),
+  ]],
+  ['Accordion', [
+    new Set<string>([border]),
+    new Set<string>(['Accordion']),
+    new Set<string>(),
+    new Set<string>(['Accordion']),
+  ]],
+  ['Empty', [
+    new Set<string>(),
+    new Set<string>(),
+    new Set<string>(),
+    new Set<string>(),
+  ]],
+  ['Chip', [
+    new Set<string>(['Text field']),
     new Set<string>(),
     new Set<string>(),
     new Set<string>(),
@@ -14,9 +35,9 @@ export const CardTypeRelations: CardTypeRelations = new Map([
   ]],
   ['Table', [
     new Set<string>(),
-    new Set<string>(['Table']),
+    new Set<string>(['Table', 'Empty']),
     new Set<string>(),
-    new Set<string>(['Table']),
+    new Set<string>(['Table', 'Empty']),
   ]],
   ['Text', [
     new Set<string>(),
@@ -108,6 +129,15 @@ const autoFillCardTypeRelations = (cc: CardTypeRelations) => {
         if (v) v[(side+2)%4].add(type);
       }));
     });
+  });
+  cc.forEach((relations, type) => {
+    const e = cc.get('Empty');
+    if (e) {
+      e[0].add(type);
+      e[1].add(type);
+      e[2].add(type);
+      e[3].add(type);
+    }
   });
 };
 autoFillCardTypeRelations(CardTypeRelations);

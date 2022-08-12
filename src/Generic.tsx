@@ -24,6 +24,7 @@ import {
   Slider,
   Switch,
   TextField,
+  Typography,
 } from '@mui/material';
 import {SelectChangeEvent} from '@mui/material/Select';
 
@@ -34,6 +35,21 @@ const capitalize = (word: string): string => {
 interface GenericProps {
   size: number
 }
+
+export const TitleGeneric: React.FunctionComponent<GenericProps> = ({size}) => {
+  return (
+    <Typography variant='h3' sx={{textTransform: 'uppercase'}}>
+      {faker.lorem.words(Math.floor(Math.random()*4)+2)}
+    </Typography>
+  );
+};
+
+export const AccordionGeneric: React.FunctionComponent<GenericProps> = ({size}) => {
+  return (
+    <div>Accordion</div>
+  );
+};
+
 export const ChipGeneric: React.FunctionComponent<GenericProps> = ({size}) => {
   return (
     <>
@@ -85,14 +101,18 @@ export const TableGeneric: React.FunctionComponent<GenericProps> = ({size}) => {
 export const TextGeneric: React.FunctionComponent<GenericProps> = ({size}) => {
   return (
     <>
-      {(new Array(size)).fill(0).map((v, i) => <p key={i.toString()}>{faker.lorem.paragraph()}</p>)}
+      {(new Array(size)).fill(0).map((v, i) => <Typography
+        mt={2}
+        key={i.toString()}>
+        {faker.lorem.sentences(size*3)}
+      </Typography>)}
     </>
   );
 };
 export const ImageGeneric: React.FunctionComponent<GenericProps> = ({size}) => {
   return (
     <img
-      src={faker.image.image()}
+      src={faker.image.nature()}
       loading="lazy"
       style={{
         display: 'block',

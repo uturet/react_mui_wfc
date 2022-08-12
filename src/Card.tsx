@@ -21,12 +21,17 @@ import {
   SliderGeneric,
   SwitchGeneric,
   TextFieldGeneric,
+  TitleGeneric,
+  AccordionGeneric,
 } from './Generic';
-
 
 const typeComponent: {
   [name: string]: (size: number) => ReactNode
 } = {
+  '_border_': (size) => null,
+  'Empty': (size) => null,
+  'Title': (size) => <TitleGeneric size={size}/>,
+  'Accordion': (size) => <AccordionGeneric size={size}/>,
   'Chip': (size) => <ChipGeneric size={size}/>,
   'Divider': (size) => <DividerGeneric size={size}/>,
   'Table': (size) => <TableGeneric size={size}/>,
