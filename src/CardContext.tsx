@@ -1,5 +1,5 @@
 import React, {createContext, useContext, useReducer} from 'react';
-import {CardTypeRelations, CardContentTypes} from './CardConfig';
+import {CardTypeRelations, CardContentTypes, border, notBorder} from './CardConfig';
 
 type CardContent = {values: Set<string>, size: number}[][]
 
@@ -16,12 +16,38 @@ const CardData: CardDataInterface = {
   content: [],
 };
 
+const generateContent = (rows: number, cols: number): CardContent => {
+  return new Array(rows).fill(0).map((v, r) =>
+    new Array(cols).fill(0).map((v, c) => (
+      {
+        size: 1,
+        values: new Set(CardContentTypes.filter((t) => {
+          let res = true;
+          v = CardTypeRelations.get(t);
+          if (v === undefined) {
+            return false;
+          }
+          if (r !== 0 && r < rows-1) {
+            if (v[1].has(border)) res = res && c === cols-1;
+            if (v[1].has(notBorder)) res = res && c !== cols-1;
+            if (v[3].has(border)) res = res && c === 0;
+            if (v[3].has(notBorder)) res = res && c !== 0;
+          } else {
+            if (v[0].has(border)) res = res && r === 0;
+            if (v[0].has(notBorder)) res = res && r !== 0;
+            if (v[2].has(border)) res = res && r === rows-1;
+            if (v[2].has(notBorder)) res = res && r !== rows-1;
+          }
+          return res;
+        })),
+      })),
+  );
+};
+
 const InitCardData = (initialData: CardDataInterface): CardDataInterface => {
   const rows = 3;
   const cols = 3;
-  const content: CardContent = new Array(rows).fill(0).map((v) =>
-    new Array(cols).fill(0).map((v) => ({size: 1, values: new Set(CardContentTypes)})),
-  );
+  const content: CardContent = generateContent(rows, cols);
   return {...initialData, ready: true, content};
 };
 
@@ -204,9 +230,7 @@ const CardDataReducer = (state: CardDataInterface, action: CardDataReducerAction
   case 'set-ready':
     return {...state, ready: action.payload.ready};
   case 'clear':
-    const content: CardContent = new Array(state.content.length).fill(0).map((v) =>
-      new Array(state.content[0].length).fill(0).map((v) => ({size: 1, values: new Set(CardContentTypes)})),
-    );
+    const content: CardContent = generateContent(state.content.length, state.content[0].length);
     return {...state, collapsed: false, ready: true, content};
   case 'collapse':
     return vaweFunctionCollapse({...state, ready: true});

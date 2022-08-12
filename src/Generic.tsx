@@ -126,7 +126,7 @@ export const ImageListGeneric: React.FunctionComponent<GenericProps> = ({size}) 
       {(new Array(size*4).fill(0)).map((v, i) => (
         <ImageListItem key={i.toString()}>
           <img
-            src={faker.image.image()}
+            src={faker.image.nature()}
             loading="lazy"
           />
         </ImageListItem>
