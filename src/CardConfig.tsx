@@ -5,7 +5,7 @@ export const notEmpty = '_not_empty_';
 type CardTypeRelations = Map<string, Set<string>[]>
 export const CardTypeRelations: CardTypeRelations = new Map([
   ['Title', [
-    new Set<string>([border, notEmpty]),
+    new Set<string>([border]),
     new Set<string>(['Title', notEmpty]),
     new Set<string>(),
     new Set<string>(['Title', notEmpty]),
@@ -60,8 +60,8 @@ export const CardTypeRelations: CardTypeRelations = new Map([
   ]],
   ['Button', [
     new Set<string>([notBorder]),
-    new Set<string>([border]),
-    new Set<string>([border]),
+    new Set<string>(),
+    new Set<string>(),
     new Set<string>(),
   ]],
   ['Checkbox', [
@@ -127,7 +127,7 @@ const autoFillCardTypeRelations = (cc: CardTypeRelations) => {
   cc.forEach((relations, type) => {
     relations.forEach((rs, side) => {
       if (rs.size === 0 || rs.has(notBorder) && rs.size === 1 ||
-       rs.has(border) && rs.size === 1) {
+      rs.has(border) && rs.size === 1) {
         const v = cc.get(type);
         if (v) defaultRelations[side].forEach((t) => v[side].add(t));
       }

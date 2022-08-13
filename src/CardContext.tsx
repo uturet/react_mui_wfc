@@ -1,7 +1,12 @@
 import React, {createContext, useContext, useReducer} from 'react';
-import {CardTypeRelations, CardContentTypes, border, notBorder} from './CardConfig';
-
-type CardContent = {values: Set<string>, size: number}[][]
+import {
+  CardTypeRelations,
+  CardContentTypes,
+  border,
+  notBorder,
+} from './CardConfig';
+type CardCell = {values: Set<string>, size: number, modified: boolean}
+type CardContent = CardCell[][]
 
 interface CardDataInterface {
   width: number
@@ -10,38 +15,45 @@ interface CardDataInterface {
   content: CardContent
 }
 const CardData: CardDataInterface = {
-  width: 12,
+  width: 8,
   ready: false,
   collapsed: false,
   content: [],
 };
 
+const generateCellValues = (row: number, col: number, rows: number, cols: number): Set<string> => (
+  new Set(CardContentTypes.filter((t) => {
+    let res = true;
+    const type = CardTypeRelations.get(t);
+    if (type === undefined) {
+      return false;
+    }
+    if (type[0].has(border)) res = res && row === 0;
+    if (type[0].has(notBorder)) res = res && row !== 0;
+    if (type[1].has(border)) res = res && col === cols-1;
+    if (type[1].has(notBorder)) res = res && col !== cols-1;
+    if (type[3].has(border)) res = res && col === 0;
+    if (type[3].has(notBorder)) res = res && col !== 0;
+    if (type[2].has(border)) res = res && row === rows-1;
+    if (type[2].has(notBorder)) res = res && row !== rows-1;
+    return res;
+  })));
+
 const generateContent = (rows: number, cols: number): CardContent => {
-  return new Array(rows).fill(0).map((v, r) =>
-    new Array(cols).fill(0).map((v, c) => (
-      {
-        size: 1,
-        values: new Set(CardContentTypes.filter((t) => {
-          let res = true;
-          v = CardTypeRelations.get(t);
-          if (v === undefined) {
-            return false;
-          }
-          if (r !== 0 && r < rows-1) {
-            if (v[1].has(border)) res = res && c === cols-1;
-            if (v[1].has(notBorder)) res = res && c !== cols-1;
-            if (v[3].has(border)) res = res && c === 0;
-            if (v[3].has(notBorder)) res = res && c !== 0;
-          } else {
-            if (v[0].has(border)) res = res && r === 0;
-            if (v[0].has(notBorder)) res = res && r !== 0;
-            if (v[2].has(border)) res = res && r === rows-1;
-            if (v[2].has(notBorder)) res = res && r !== rows-1;
-          }
-          return res;
-        })),
-      })),
+  return new Array(rows).fill(0).map((_, r) =>
+    new Array(cols).fill(0).map((_, c) => ({
+      modified: false,
+      size: 1,
+      values: generateCellValues(r, c, rows, cols),
+    })),
   );
+};
+
+const fixUnmodifiedRow = (row: number, cc: CardDataInterface) => {
+  if (cc.content[row].some((c) => c.modified)) return;
+  cc.content[row].forEach((_, col) => {
+    cc.content[row][col].values = generateCellValues(row, col, cc.content.length, cc.content[0].length);
+  });
 };
 
 const InitCardData = (initialData: CardDataInterface): CardDataInterface => {
@@ -109,7 +121,10 @@ const vaweFunction = (row: number, col: number, cardData: CardDataInterface): Ca
           const v = CardTypeRelations.get(t);
           if (v) v[i].forEach((v) => cardData.content[r][c].values.has(v) ? ready.add(v) : null);
         });
-        cardData.content[r][c].values = ready;
+        if (cardData.content[r][c].values.size !== ready.size) {
+          cardData.content[r][c].modified = true;
+          cardData.content[r][c].values = ready;
+        }
       }
     });
   }
@@ -196,11 +211,11 @@ const CardDataReducer = (state: CardDataInterface, action: CardDataReducerAction
     return {...state, width: action.payload.width};
   case 'set-rows':
     if (state.content.length < action.payload.rows) {
-      const newRows = new Array(action.payload.rows - state.content.length).fill(0).map((v) =>
-        new Array(state.content[0].length).fill(0).map((v) => ({size: 1, values: new Set(CardContentTypes)})),
-      );
+      const newRows = generateContent(action.payload.rows - state.content.length + 1, state.content[0].length);
       const prevLastRow = state.content.length-1;
-      const newState: CardDataInterface = {...state, ready: true, content: [...state.content, ...newRows]};
+      const newState: CardDataInterface = {
+        ...state, ready: true, content: [...state.content, ...newRows.slice(1, newRows.length)]};
+      fixUnmodifiedRow(prevLastRow, newState);
       newState.content[prevLastRow].forEach((c, i) => vaweFunction(prevLastRow, i, newState));
       return newState;
     }
@@ -211,8 +226,12 @@ const CardDataReducer = (state: CardDataInterface, action: CardDataReducerAction
       const newState: CardDataInterface = {
         ...state,
         ready: true,
-        content: state.content.map((r) => [...r, ...(new Array(action.payload.cols - prevCols)
-          .fill(0).map((v) => ({size: 1, values: new Set(CardContentTypes)}))),
+        content: state.content.map((r, row) => [...r, ...(new Array(action.payload.cols - prevCols)
+          .fill(0).map((_, col) => ({
+            modified: false,
+            size: 1,
+            values: generateCellValues(row, col, state.content.length, action.payload.cols),
+          }))),
         ]),
       };
 
@@ -226,6 +245,7 @@ const CardDataReducer = (state: CardDataInterface, action: CardDataReducerAction
     };
   case 'set-type':
     state.content[action.payload.row][action.payload.col].values = new Set<string>([action.payload.type]);
+    state.content[action.payload.row][action.payload.col].modified = true;
     return isCollapsed(vaweFunction(action.payload.row, action.payload.col, {...state, ready: true}));
   case 'set-ready':
     return {...state, ready: action.payload.ready};
