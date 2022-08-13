@@ -22,7 +22,7 @@ import {
   SwitchGeneric,
   TextFieldGeneric,
   TitleGeneric,
-  AccordionGeneric,
+  TabsGeneric,
 } from './Generic';
 
 const typeComponent: {
@@ -31,7 +31,7 @@ const typeComponent: {
   '_border_': (size) => null,
   'Empty': (size) => null,
   'Title': (size) => <TitleGeneric size={size}/>,
-  'Accordion': (size) => <AccordionGeneric size={size}/>,
+  'Tabs': (size) => <TabsGeneric size={size}/>,
   'Chip': (size) => <ChipGeneric size={size}/>,
   'Divider': (size) => <DividerGeneric size={size}/>,
   'Table': (size) => <TableGeneric size={size}/>,

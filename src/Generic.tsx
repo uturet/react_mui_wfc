@@ -25,6 +25,9 @@ import {
   Switch,
   TextField,
   Typography,
+  Box,
+  Tab,
+  Tabs,
 } from '@mui/material';
 import {SelectChangeEvent} from '@mui/material/Select';
 
@@ -44,9 +47,24 @@ export const TitleGeneric: React.FunctionComponent<GenericProps> = ({size}) => {
   );
 };
 
-export const AccordionGeneric: React.FunctionComponent<GenericProps> = ({size}) => {
+export const TabsGeneric: React.FunctionComponent<GenericProps> = ({size}) => {
+  const [value, setValue] = useState(0);
+  const [tabs, setTabs] = useState<string[]>([]);
+
+  useEffect(() => {
+    setTabs((new Array<string>(size+1).fill('')).map((_) => faker.word.noun()));
+  }, []);
+
+  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+    setValue(newValue);
+  };
+
   return (
-    <div>Accordion</div>
+    <Box sx={{borderBottom: 1, borderColor: 'divider'}}>
+      <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+        {tabs.map((tab, i) => <Tab key={i.toString()} label={tab}/>)}
+      </Tabs>
+    </Box>
   );
 };
 

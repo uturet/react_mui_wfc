@@ -10,11 +10,11 @@ export const CardTypeRelations: CardTypeRelations = new Map([
     new Set<string>(),
     new Set<string>(['Title', notEmpty]),
   ]],
-  ['Accordion', [
+  ['Tabs', [
     new Set<string>([border, notEmpty]),
-    new Set<string>(['Accordion', notEmpty]),
+    new Set<string>(['Tabs', notEmpty]),
     new Set<string>(),
-    new Set<string>(['Accordion', notEmpty]),
+    new Set<string>(['Tabs', notEmpty]),
   ]],
   ['Empty', [
     new Set<string>([notBorder]),
