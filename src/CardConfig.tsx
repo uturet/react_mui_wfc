@@ -24,9 +24,9 @@ export const CardTypeRelations: CardTypeRelations = new Map([
   ]],
   ['Chip', [
     new Set<string>([notBorder]),
-    new Set<string>(),
-    new Set<string>(),
-    new Set<string>(),
+    new Set<string>(['Text field', 'Chip']),
+    new Set<string>([notBorder]),
+    new Set<string>(['Text field', 'Chip']),
   ]],
   ['Divider', [
     new Set<string>([notBorder]),
@@ -42,9 +42,9 @@ export const CardTypeRelations: CardTypeRelations = new Map([
   ]],
   ['Text', [
     new Set<string>(),
-    new Set<string>(['Text', 'Chip', 'Button']),
+    new Set<string>(['Text', 'Button']),
     new Set<string>(),
-    new Set<string>(['Text', 'Chip', 'Button']),
+    new Set<string>(['Text', 'Button']),
   ]],
   ['Image', [
     new Set<string>(),
@@ -53,10 +53,10 @@ export const CardTypeRelations: CardTypeRelations = new Map([
     new Set<string>(['Text', 'Image', 'Image list']),
   ]],
   ['Image list', [
+    new Set<string>([notBorder]),
+    new Set<string>(['Text', 'Image', 'Image list']),
     new Set<string>(),
-    new Set<string>(['Image', 'Image list']),
-    new Set<string>(),
-    new Set<string>(['Image', 'Image list']),
+    new Set<string>(['Text', 'Image', 'Image list']),
   ]],
   ['Button', [
     new Set<string>([notBorder]),
@@ -66,39 +66,39 @@ export const CardTypeRelations: CardTypeRelations = new Map([
   ]],
   ['Checkbox', [
     new Set<string>([notBorder]),
-    new Set<string>(['Text', 'Button', 'Chip']),
+    new Set<string>(['Text', 'Button', 'Checkbox']),
     new Set<string>(),
-    new Set<string>(['Text', 'Button', 'Chip']),
+    new Set<string>(['Text', 'Button', 'Checkbox']),
   ]],
   ['Radio button', [
     new Set<string>([notBorder]),
-    new Set<string>(['Text', 'Button', 'Chip', 'Radio button']),
+    new Set<string>(['Text', 'Button', 'Radio button']),
     new Set<string>(),
-    new Set<string>(['Text', 'Button', 'Chip', 'Radio button']),
+    new Set<string>(['Text', 'Button', 'Radio button']),
   ]],
   ['Select', [
     new Set<string>([notBorder]),
-    new Set<string>(['Text', 'Button', 'Chip']),
+    new Set<string>(['Text', 'Button', 'Select']),
     new Set<string>(),
-    new Set<string>(['Text', 'Button', 'Chip']),
+    new Set<string>(['Text', 'Button', 'Select']),
   ]],
   ['Slider', [
     new Set<string>([notBorder]),
-    new Set<string>(['Text', 'Button', 'Chip']),
+    new Set<string>(['Text', 'Button']),
     new Set<string>(),
-    new Set<string>(['Text', 'Button', 'Chip']),
+    new Set<string>(['Text', 'Button']),
   ]],
   ['Switch', [
     new Set<string>([notBorder]),
-    new Set<string>(['Text', 'Button', 'Chip']),
+    new Set<string>(['Text', 'Button']),
     new Set<string>(),
-    new Set<string>(['Text', 'Button', 'Chip']),
+    new Set<string>(['Text', 'Button']),
   ]],
   ['Text field', [
     new Set<string>([notBorder]),
-    new Set<string>(['Text', 'Button', 'Chip']),
+    new Set<string>(['Text', 'Button']),
     new Set<string>(),
-    new Set<string>(['Text', 'Button', 'Chip']),
+    new Set<string>(['Text', 'Button']),
   ]],
 ]);
 const autoFillCardTypeRelations = (cc: CardTypeRelations) => {

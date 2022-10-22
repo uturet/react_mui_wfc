@@ -42,7 +42,7 @@ interface GenericProps {
 export const TitleGeneric: React.FunctionComponent<GenericProps> = ({size}) => {
   return (
     <Typography variant='h3' sx={{textTransform: 'uppercase'}}>
-      {faker.lorem.words(Math.floor(Math.random()*4)+2)}
+      {faker.lorem.words(Math.floor(Math.random()*2)+2)}
     </Typography>
   );
 };
@@ -154,7 +154,9 @@ export const ImageListGeneric: React.FunctionComponent<GenericProps> = ({size}) 
 };
 export const ButtonGeneric: React.FunctionComponent<GenericProps> = ({size}) => {
   return (
-    <Button variant="contained">{faker.word.verb(10)} {faker.word.noun(10)}</Button>
+    <Button variant="contained">
+      {size === 1 ? faker.word.verb(6): `${faker.word.verb(10)} ${faker.word.verb(10)}`}
+    </Button>
   );
 };
 export const CheckboxGeneric: React.FunctionComponent<GenericProps> = ({size}) => {

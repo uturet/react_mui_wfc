@@ -10,6 +10,7 @@ import {
   Typography,
   Box,
   Button,
+  AppBar,
 } from '@mui/material';
 import {useCard} from './CardContext';
 
@@ -51,50 +52,77 @@ const Drawer: React.FunctionComponent<DrawerProps> = (props) => {
   const [width, preSetWidth] = useState<number>(cardData.width);
   const [rows, preSetRows] = useState<number>(cardData.content.length);
   const [cols, preSetCols] = useState<number>(cardData.content[0].length);
+  const [open, setOpen] = useState(true);
 
   return (
-    <MUIDrawer {...props}>
-      <Box sx={{display: 'flex', flexDirection: 'column', height: '100%'}}>
-        <Toolbar />
-        <Divider />
-        <Box sx={{flexGrow: '1'}}/>
+    <Box sx={{display: 'flex'}}>
+      <AppBar position="fixed" sx={{left: 0, width: '240px'}}>
+        <Toolbar>
+          <Button
+            onClick={() => setOpen(true)}
+            sx={{mr: 2, ...(open && {display: 'none'})}}
+          >
+            Close
+          </Button>
+          <Typography variant="h6" noWrap component="div">
+            Here we are
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <MUIDrawer
+        sx={{
+          'width': '240px',
+          'flexShrink': 0,
+          '& .MuiDrawer-paper': {
+            width: '240px',
+            boxSizing: 'border-box',
+          },
+        }}
+        open={open}
+        variant='persistent'>
+        <Box sx={{display: 'flex', flexDirection: 'column', height: '100%'}}>
+          <Toolbar>
+            <Button onClick={() => setOpen(false)}>Hide</Button>
+          </Toolbar>
+          <Divider />
+          <Box sx={{flexGrow: '1'}}/>
+          <List>
+            <ListItem>
+              <Button onClick={clear} fullWidth>Clear</Button>
+            </ListItem>
+            <ListItem>
+              <Button disabled={cardData.collapsed} onClick={generate} fullWidth>Generate</Button>
+            </ListItem>
+          </List>
+          <Divider />
+          <List>
+            <ListItemSlider
+              disabled={false}
+              label='Width'
+              val={width}
+              max={12}
+              setVal={setWidth}
+              preSetVal={preSetWidth}/>
 
-        <List>
-          <ListItem>
-            <Button onClick={clear} fullWidth>Clear</Button>
-          </ListItem>
-          <ListItem>
-            <Button disabled={cardData.collapsed} onClick={generate} fullWidth>Generate</Button>
-          </ListItem>
-        </List>
-        <Divider />
-        <List>
-          <ListItemSlider
-            disabled={false}
-            label='Width'
-            val={width}
-            max={12}
-            setVal={setWidth}
-            preSetVal={preSetWidth}/>
+            <ListItemSlider
+              disabled={cardData.collapsed}
+              label='Columns'
+              val={cols}
+              max={12}
+              preSetVal={preSetCols}
+              setVal={setCols}/>
 
-          <ListItemSlider
-            disabled={cardData.collapsed}
-            label='Columns'
-            val={cols}
-            max={12}
-            preSetVal={preSetCols}
-            setVal={setCols}/>
-
-          <ListItemSlider
-            disabled={cardData.collapsed}
-            label='Rows'
-            val={rows}
-            max={12}
-            preSetVal={preSetRows}
-            setVal={setRows}/>
-        </List>
-      </Box>
-    </MUIDrawer>
+            <ListItemSlider
+              disabled={cardData.collapsed}
+              label='Rows'
+              val={rows}
+              max={12}
+              preSetVal={preSetRows}
+              setVal={setRows}/>
+          </List>
+        </Box>
+      </MUIDrawer>
+    </Box>
   );
 };
 
