@@ -2,7 +2,6 @@ import React, {useState} from 'react';
 import {
   Drawer as MUIDrawer,
   DrawerProps,
-  Toolbar,
   Divider,
   List,
   ListItem,
@@ -10,7 +9,6 @@ import {
   Typography,
   Box,
   Button,
-  AppBar,
 } from '@mui/material';
 import {useCard} from './CardContext';
 
@@ -52,23 +50,9 @@ const Drawer: React.FunctionComponent<DrawerProps> = (props) => {
   const [width, preSetWidth] = useState<number>(cardData.width);
   const [rows, preSetRows] = useState<number>(cardData.content.length);
   const [cols, preSetCols] = useState<number>(cardData.content[0].length);
-  const [open, setOpen] = useState(true);
 
   return (
     <Box sx={{display: 'flex'}}>
-      <AppBar position="fixed" sx={{left: 0, width: '240px'}}>
-        <Toolbar>
-          <Button
-            onClick={() => setOpen(true)}
-            sx={{mr: 2, ...(open && {display: 'none'})}}
-          >
-            Close
-          </Button>
-          <Typography variant="h6" noWrap component="div">
-            Here we are
-          </Typography>
-        </Toolbar>
-      </AppBar>
       <MUIDrawer
         sx={{
           'width': '240px',
@@ -78,13 +62,9 @@ const Drawer: React.FunctionComponent<DrawerProps> = (props) => {
             boxSizing: 'border-box',
           },
         }}
-        open={open}
+        open={true}
         variant='persistent'>
         <Box sx={{display: 'flex', flexDirection: 'column', height: '100%'}}>
-          <Toolbar>
-            <Button onClick={() => setOpen(false)}>Hide</Button>
-          </Toolbar>
-          <Divider />
           <Box sx={{flexGrow: '1'}}/>
           <List>
             <ListItem>

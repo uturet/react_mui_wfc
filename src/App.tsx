@@ -22,7 +22,7 @@ function App() {
   return (
     <CardProvider>
       <Box sx={{display: 'flex', width: '100%'}}>
-        <AppBar>
+        <AppBar sx={{paddingLeft: '240px'}}>
           <Toolbar>
             <IconButton
               color="inherit"
