@@ -1,7 +1,3 @@
 # React MaterialUI Wave Function Collapse
 
-
-``` 
-yarn install
-yarn start
-```
+# [Demo](https://uturet.github.io/react_mui_wfc/)
